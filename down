@@ -1,0 +1,14 @@
+#! /bin/bash
+
+echo "STOPPING STACK..."
+docker compose -f docker-compose-pg.yaml down
+docker compose -f docker-compose-ory.yaml down
+docker compose -f docker-compose-addons.yaml down
+docker compose -f docker-compose-net.yaml down
+echo "DONE."
+
+echo
+
+echo "REMOVING NETWORK..."
+docker network remove ory_network
+echo "DONE."

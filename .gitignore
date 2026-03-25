@@ -1,0 +1,6 @@
+# Don't commit SSL certificates
+net/acme/**
+# Don't commit the Postgres database
+pg/data
+# Don't commit the MailSlurper database
+extras/mailslurper/data

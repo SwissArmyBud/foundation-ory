@@ -1,0 +1,51 @@
+# docker-compose.yml
+services:
+  traefik:
+    image: traefik:v${TRAEFIK_VERSION}
+    env_file: 
+      - path: .env
+        required: true
+    command:
+      - "--log.level=INFO"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web-insecure.address=:80"
+      - "--entrypoints.web-secure.address=:443"
+      # ACME STG configuration
+      - "--certificatesresolvers.stg.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.stg.acme.email=${ACME_CERTIFICATE_EMAIL}"
+      - "--certificatesresolvers.stg.acme.storage=/acme/stg.json"
+      - "--certificatesresolvers.stg.acme.tlschallenge=true"
+      # ACME PRD configuration
+      - "--certificatesresolvers.prd.acme.caserver=https://acme-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.prd.acme.email=${ACME_CERTIFICATE_EMAIL}"
+      - "--certificatesresolvers.prd.acme.storage=/acme/prd.json"
+      - "--certificatesresolvers.prd.acme.tlschallenge=true"
+    labels:
+      # TRAEFIK
+      # HTTPS-Redirect Middleware
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+      # Prefix-stripping Middleware
+      - "traefik.http.middlewares.prefix-strip.stripprefix.prefixes=${KRATOS_PUBLIC_PATH},${KRATOS_ADMIN_PATH},${WHOAMI_PUBLIC_PATH}"
+      # DASHBOARD
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_SUBDOMAIN}.${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints[0]=web-insecure"
+      - "traefik.http.routers.dashboard.entrypoints[1]=web-secure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=prd"
+      - "traefik.http.routers.dashboard.middlewares=https-redirect"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./net/acme:/acme
+    networks:
+      - ory_network
+
+networks:
+  ory_network:
+    external: true

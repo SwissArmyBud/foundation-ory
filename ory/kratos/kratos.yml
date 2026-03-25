@@ -1,0 +1,110 @@
+version: v0.13.0
+
+dsn: ${DSN}
+
+session:
+  cookie:
+    path: /
+    domain: .${SERVICE_DOMAIN}
+    same_site: Lax
+cookies:
+  path: /
+  domain: .${SERVICE_DOMAIN}
+  same_site: Lax
+
+serve:
+  public:
+    base_url: https://${SERVICE_DOMAIN}${KRATOS_PUBLIC_PATH}
+    cors:
+      enabled: true
+  admin:
+    base_url: https://${SERVICE_DOMAIN}${KRATOS_ADMIN_PATH}
+
+selfservice:
+  default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome
+  allowed_return_urls:
+    - https://${SERVICE_DOMAIN}
+
+  methods:
+    password:
+      enabled: true
+    totp:
+      config:
+        issuer: Kratos
+      enabled: true
+    lookup_secret:
+      enabled: true
+    link:
+      enabled: true
+    code:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/error
+
+    settings:
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/settings
+      privileged_session_max_age: 15m
+      required_aal: highest_available
+
+    recovery:
+      enabled: true
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/recovery
+      use: code
+
+    verification:
+      enabled: true
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/verification
+      use: code
+      after:
+        default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome
+
+    logout:
+      after:
+        default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
+
+    login:
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
+      lifespan: 10m
+
+    registration:
+      lifespan: 10m
+      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/registration
+      after:
+        password:
+          hooks:
+            - hook: session
+            - hook: show_verification_ui
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - ${KRATOS_COOKIE_SECRET}
+  cipher:
+    - ${KRATOS_CIPHER_SECRET}
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+
+feature_flags:
+  use_continue_with_transitions: true

@@ -1,0 +1,80 @@
+version: '3.7'
+services:
+  kratos-selfservice-ui-node:
+    image: oryd/kratos-selfservice-ui-node:v${ORY_VERSION}
+    env_file: 
+      - path: .env
+        required: true
+    environment:
+      - KRATOS_PUBLIC_URL=https://${SERVICE_DOMAIN}${KRATOS_PUBLIC_PATH}
+      - KRATOS_BROWSER_URL=https://${SERVICE_DOMAIN}${KRATOS_PUBLIC_PATH}
+      - KRATOS_ADMIN_URL=https://${SERVICE_DOMAIN}${KRATOS_ADMIN_PATH}
+      - COOKIE_SECRET=${SELFSERVE_COOKIE_SECRET}
+      - CSRF_COOKIE_NAME=${SELFSERVE_CSRF_COOKIE_NAME}
+      - CSRF_COOKIE_SECRET=${SELFSERVE_CSRF_COOKIE_SECRET}
+      - BASE_PATH=${SELFSERVE_UI_PATH}
+    networks:
+      - ory_network
+    restart: on-failure    
+    labels:
+      - "traefik.enable=true"
+      # SELF SERVE UI
+      # Name-routed from "auth" subdomain
+      - "traefik.http.routers.self-serve.rule=Host(`${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.self-serve.rule=PathPrefix(`${SELFSERVE_UI_PATH}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.self-serve.loadbalancer.server.port=3000"
+      - "traefik.http.routers.self-serve.service=self-serve"
+      # HTTP/HTTPS ingress
+      - "traefik.http.routers.self-serve.entrypoints[0]=web-insecure"
+      - "traefik.http.routers.self-serve.entrypoints[1]=web-secure"
+      - "traefik.http.routers.self-serve.tls=true"
+      - "traefik.http.routers.self-serve.middlewares=https-redirect"
+      # Production ACME cert
+      - "traefik.http.routers.self-serve.tls.certresolver=prd"
+  mailslurper:
+    # Ory's MailSlurper implementation is broken, build from source
+    build: https://github.com/mailslurper/mailslurper.git
+    env_file: 
+      - path: .env
+        required: true
+    networks:
+      - ory_network
+    volumes:
+      - ./extras/mailslurper/data:/app/data
+      - ./extras/mailslurper/config.json:/app/config-template.json
+      - ./extras/mailslurper/loader.sh:/app/loader.sh
+    entrypoint: ["sh"]
+    command:
+      - /app/loader.sh
+    labels:
+      - "traefik.enable=true"
+      # WEBMAIL UI
+      # Name-routed from "mail" subdomain
+      - "traefik.http.routers.mail.rule=Host(`${MAIL_SUBDOMAIN}.${SERVICE_DOMAIN}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.mail.loadbalancer.server.port=4436"
+      - "traefik.http.routers.mail.service=mail"
+      # HTTP/HTTPS ingress
+      - "traefik.http.routers.mail.entrypoints[0]=web-insecure"
+      - "traefik.http.routers.mail.entrypoints[1]=web-secure"
+      - "traefik.http.routers.mail.tls=true"
+      - "traefik.http.routers.mail.middlewares=https-redirect"
+      # WEBMAIL API
+      # Name-routed from "slurp" subdomain
+      - "traefik.http.routers.slurp.rule=Host(`${SLURP_SUBDOMAIN}.${SERVICE_DOMAIN}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.slurp.loadbalancer.server.port=4437"
+      - "traefik.http.routers.slurp.service=slurp"
+      # HTTP/HTTPS ingress
+      - "traefik.http.routers.slurp.entrypoints[0]=web-insecure"
+      - "traefik.http.routers.slurp.entrypoints[1]=web-secure"
+      - "traefik.http.routers.slurp.tls=true"
+      - "traefik.http.routers.slurp.middlewares=https-redirect"
+      # Production ACME cert
+      - "traefik.http.routers.slurp.tls.certresolver=prd"
+
+networks:
+  ory_network:
+    external: true
+

@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+  ory-pg:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: ory-pg
+    env_file: 
+      - path: .env
+        required: true
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 6
+      start_period: 10s
+      timeout: 15s
+    networks:
+      - ory_network
+    volumes:
+      - ./pg/data:/var/lib/postgresql
+      - ./pg/init:/docker-entrypoint-initdb.d
+    labels:
+      - "traefik.enable=false"
+  kratos-migrate:
+    image: oryd/kratos:v${ORY_VERSION}
+    container_name: kratos-migrate
+    depends_on:
+      ory-pg:
+        condition: service_healthy
+    env_file: 
+      - path: .env
+        required: true
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ory-pg:5432/${POSTGRES_KRATOS_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+    volumes:
+      - ./ory/kratos:/etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - ory_network
+    labels:
+      - "traefik.enable=false"
+
+networks:
+  ory_network:
+    external: true
