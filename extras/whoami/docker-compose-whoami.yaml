@@ -14,7 +14,7 @@ services:
       - "traefik.http.routers.whoami.entrypoints[1]=web-secure"
       - "traefik.http.routers.whoami.tls=true"
       # Production ACME Cert
-      - "traefik.http.routers.whoami.tls.certresolver=prd"
+      - "traefik.http.routers.whoami.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       # Middleware list
       - "traefik.http.routers.whoami.middlewares=https-redirect,prefix-strip"
     networks:
@@ -34,7 +34,7 @@ services:
       - "traefik.http.routers.portami.entrypoints[1]=web-secure"
       - "traefik.http.routers.portami.tls=true"
       # Production ACME Cert
-      - "traefik.http.routers.portami.tls.certresolver=prd"
+      - "traefik.http.routers.portami.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       # Middleware list
       - "traefik.http.routers.portami.middlewares=https-redirect"
     command:

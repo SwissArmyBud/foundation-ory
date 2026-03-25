@@ -31,7 +31,7 @@ services:
       - "traefik.http.routers.self-serve.tls=true"
       - "traefik.http.routers.self-serve.middlewares=https-redirect"
       # Production ACME cert
-      - "traefik.http.routers.self-serve.tls.certresolver=prd"
+      - "traefik.http.routers.self-serve.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
   mailslurper:
     # Ory's MailSlurper implementation is broken, build from source
     build: https://github.com/mailslurper/mailslurper.git
@@ -72,7 +72,7 @@ services:
       - "traefik.http.routers.slurp.tls=true"
       - "traefik.http.routers.slurp.middlewares=https-redirect"
       # Production ACME cert
-      - "traefik.http.routers.slurp.tls.certresolver=prd"
+      - "traefik.http.routers.slurp.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
 networks:
   ory_network:

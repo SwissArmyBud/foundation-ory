@@ -30,7 +30,7 @@ services:
       # Middlewares
       - "traefik.http.routers.kratos-public.middlewares=https-redirect,prefix-strip"
       # Production ACME cert
-      - "traefik.http.routers.kratos-public.tls.certresolver=prd"
+      - "traefik.http.routers.kratos-public.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       # ADMIN
       # Name-routed from "auth" subdomain
       - "traefik.http.routers.kratos-admin.rule=Host(`${SERVICE_DOMAIN}`)"
@@ -46,7 +46,7 @@ services:
       # Middlewares
       - "traefik.http.routers.kratos-admin.middlewares=https-redirect,prefix-strip"
       # Production ACME cert
-      - "traefik.http.routers.kratos-admin.tls.certresolver=prd"
+      - "traefik.http.routers.kratos-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
 networks:
   ory_network:

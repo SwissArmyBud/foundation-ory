@@ -35,7 +35,7 @@ services:
       - "traefik.http.routers.dashboard.entrypoints[0]=web-insecure"
       - "traefik.http.routers.dashboard.entrypoints[1]=web-secure"
       - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=prd"
+      - "traefik.http.routers.dashboard.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       - "traefik.http.routers.dashboard.middlewares=https-redirect"
     ports:
       - "80:80"
