@@ -4,3 +4,6 @@ net/acme/**
 pg/data
 # Don't commit the MailSlurper database
 extras/mailslurper/data
+# Don't commit executed config templates
+kratos.yml
+hydra.yml

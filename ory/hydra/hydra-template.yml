@@ -1,0 +1,25 @@
+serve:
+  cookies:
+    same_site_mode: Lax
+
+urls:
+  self:
+    issuer: https://${SERVICE_DOMAIN}${HYDRA_PUBLIC_PATH}
+  consent: https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/consent
+  login: https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/login
+  logout: https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/logout
+  device:
+    verification: https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/device/verify
+    success: https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/device/success
+
+secrets:
+  system:
+    - youReallyNeedToChangeThis
+
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: youReallyNeedToChangeThis

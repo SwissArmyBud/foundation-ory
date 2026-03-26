@@ -27,7 +27,7 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       # Prefix-stripping Middleware
-      - "traefik.http.middlewares.prefix-strip.stripprefix.prefixes=${KRATOS_PUBLIC_PATH},${KRATOS_ADMIN_PATH},${WHOAMI_PUBLIC_PATH}"
+      - "traefik.http.middlewares.prefix-strip.stripprefix.prefixes=${KRATOS_PUBLIC_PATH},${KRATOS_ADMIN_PATH},${HYDRA_PUBLIC_PATH},${HYDRA_ADMIN_PATH},${WHOAMI_PUBLIC_PATH}"
       # DASHBOARD
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_SUBDOMAIN}.${SERVICE_DOMAIN}`)"

@@ -42,7 +42,7 @@ services:
       - ory_network
     volumes:
       - ./extras/mailslurper/data:/app/data
-      - ./extras/mailslurper/config.json:/app/config-template.json
+      - ./extras/mailslurper/config-template.json:/app/config-template.json
       - ./extras/mailslurper/loader.sh:/app/loader.sh
     entrypoint: ["sh"]
     command:

@@ -5,6 +5,7 @@ Foundation-Ory (_foundationally_) is meant to provide a foundationally complete 
 ## Ory Services
 
 - **Kratos**: State-free session management
+- **Hyddra**: State-lite OAuth2.0 server
 
 ## Project Modules
 

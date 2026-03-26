@@ -39,6 +39,25 @@ services:
       - ory_network
     labels:
       - "traefik.enable=false"
+  hydra-migrate:
+    image: oryd/hydra:v${ORY_VERSION}
+    container_name: hydra-migrate
+    depends_on:
+      ory-pg:
+        condition: service_healthy
+    env_file: 
+      - path: .env
+        required: true
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ory-pg:5432/${POSTGRES_HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+    volumes:
+      - ./ory/hydra:/etc/config/hydra
+    command: -c /etc/config/hydra/hydra.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - ory_network
+    labels:
+      - "traefik.enable=false"
 
 networks:
   ory_network:
