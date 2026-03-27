@@ -45,7 +45,7 @@ services:
       - HYDRA_ADMIN_URL=${HYDRA_ADMIN_PATH}
     command: [
       perform, authorization-code,
-      --client-id, 097b9b20-a74e-4fe3-b556-6bc36cd04c64, --client-secret, Vru71S46fE469ApVqQZ3J6s1Ew,
+      --client-id, <SET-ME>, --client-secret, <SET ME>,
       --endpoint, "https://${SERVICE_DOMAIN}${HYDRA_PUBLIC_PATH}", --port 5555, 
       --scope openid, --scope offline,
       --redirect, "https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/callback"
