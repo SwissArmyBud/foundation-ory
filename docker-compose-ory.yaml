@@ -44,8 +44,7 @@ services:
       - "traefik.http.services.kratos-public-svclb.loadbalancer.server.port=4433"
       - "traefik.http.routers.kratos-public.service=kratos-public-svclb"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.kratos-public.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.kratos-public.entrypoints[1]=web-secure"
+      - "traefik.http.routers.kratos-public.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.kratos-public.tls=true"
       # Middlewares
       - "traefik.http.routers.kratos-public.middlewares=https-redirect,prefix-strip"
@@ -59,8 +58,7 @@ services:
       - "traefik.http.services.kratos-admin-svclb.loadbalancer.server.port=4434"
       - "traefik.http.routers.kratos-admin.service=kratos-admin-svclb"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.kratos-admin.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.kratos-admin.entrypoints[1]=web-secure"
+      - "traefik.http.routers.kratos-admin.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.kratos-admin.tls=true"
       - "traefik.http.routers.kratos-admin.middlewares[1]=https-redirect"
       # Middlewares
@@ -96,8 +94,7 @@ services:
       - "traefik.http.services.hydra-public-svclb.loadbalancer.server.port=4444"
       - "traefik.http.routers.hydra-public.service=hydra-public-svclb"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.hydra-public.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.hydra-public.entrypoints[1]=web-secure"
+      - "traefik.http.routers.hydra-public.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.hydra-public.tls=true"
       # Middlewares
       - "traefik.http.routers.hydra-public.middlewares=https-redirect,prefix-strip"
@@ -111,8 +108,7 @@ services:
       - "traefik.http.services.hydra-admin-svclb.loadbalancer.server.port=4445"
       - "traefik.http.routers.hydra-admin.service=hydra-admin-svclb"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.hydra-admin.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.hydra-admin.entrypoints[1]=web-secure"
+      - "traefik.http.routers.hydra-admin.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.hydra-admin.tls=true"
       - "traefik.http.routers.hydra-admin.middlewares[1]=https-redirect"
       # Middlewares

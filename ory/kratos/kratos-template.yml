@@ -20,6 +20,9 @@ serve:
   admin:
     base_url: https://${SERVICE_DOMAIN}${KRATOS_ADMIN_PATH}
 
+oauth2_provider:
+  url: https://${SERVICE_DOMAIN}${HYDRA_ADMIN_PATH}
+
 selfservice:
   default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome
   allowed_return_urls:
@@ -104,7 +107,7 @@ identity:
 
 courier:
   smtp:
-    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
+    connection_uri: smtps://test:test@${SMTP_SUBDOMAIN}.${SERVICE_DOMAIN}:1025/?skip_ssl_verify=true
 
 feature_flags:
   use_continue_with_transitions: true

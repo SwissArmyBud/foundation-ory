@@ -1,6 +1,6 @@
 # Foundation-Ory
 
-Foundation-Ory (_foundationally_) is meant to provide a foundationally complete solution for basing a production Ory deployment on. Skips over several of the most common pitfalls when setting up an Ory system and provides a modularized approach via Docker Compose and a shared environment file.
+Foundation-Ory (_foundationally_) is meant to provide a functionally complete IAM solution for basing a production Ory deployment on. Skips over several of the most common pitfalls when setting up an Ory system and provides a modularized approach via Docker Compose and a shared environment file.
 
 ## Ory Services
 

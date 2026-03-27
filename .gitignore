@@ -1,9 +1,7 @@
-# Don't commit SSL certificates
-net/acme/**
+# Don't commit SSL certificate stores
+net/acme/*.json
 # Don't commit the Postgres database
 pg/data
-# Don't commit the MailSlurper database
-extras/mailslurper/data
 # Don't commit executed config templates
 kratos.yml
 hydra.yml

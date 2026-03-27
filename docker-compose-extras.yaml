@@ -9,6 +9,7 @@ services:
       - KRATOS_PUBLIC_URL=https://${SERVICE_DOMAIN}${KRATOS_PUBLIC_PATH}
       - KRATOS_BROWSER_URL=https://${SERVICE_DOMAIN}${KRATOS_PUBLIC_PATH}
       - KRATOS_ADMIN_URL=https://${SERVICE_DOMAIN}${KRATOS_ADMIN_PATH}
+      - HYDRA_ADMIN_URL=https://${SERVICE_DOMAIN}${HYDRA_ADMIN_PATH}
       - COOKIE_SECRET=${SELFSERVE_COOKIE_SECRET}
       - CSRF_COOKIE_NAME=${SELFSERVE_CSRF_COOKIE_NAME}
       - CSRF_COOKIE_SECRET=${SELFSERVE_CSRF_COOKIE_SECRET}
@@ -26,12 +27,47 @@ services:
       - "traefik.http.services.self-serve.loadbalancer.server.port=3000"
       - "traefik.http.routers.self-serve.service=self-serve"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.self-serve.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.self-serve.entrypoints[1]=web-secure"
+      - "traefik.http.routers.self-serve.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.self-serve.tls=true"
       - "traefik.http.routers.self-serve.middlewares=https-redirect"
       # Production ACME cert
       - "traefik.http.routers.self-serve.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
+  consent:
+    image: oryd/hydra:v${ORY_VERSION}
+    container_name: ory-consent
+    restart: unless-stopped
+    env_file: 
+      - path: .env
+        required: true
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ory-pg:5432/${POSTGRES_HYDRA_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      - LOG_LEVEL=trace
+      - HYDRA_ADMIN_URL=${HYDRA_ADMIN_PATH}
+    command: [
+      perform, authorization-code,
+      --client-id, 097b9b20-a74e-4fe3-b556-6bc36cd04c64, --client-secret, Vru71S46fE469ApVqQZ3J6s1Ew,
+      --endpoint, "https://${SERVICE_DOMAIN}${HYDRA_PUBLIC_PATH}", --port 5555, 
+      --scope openid, --scope offline,
+      --redirect, "https://${SERVICE_DOMAIN}${CONSENT_UI_PATH}/callback"
+    ]
+    networks:
+      - ory_network
+    labels:
+      - "traefik.enable=true"
+      # Consent App
+      # Name-routed from subdomain
+      - "traefik.http.routers.consent-ui.rule=Host(`${SERVICE_DOMAIN}`)"
+      - "traefik.http.routers.consent-ui.rule=PathPrefix(`${CONSENT_UI_PATH}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.consent-ui-svclb.loadbalancer.server.port=5555"
+      - "traefik.http.routers.consent-ui.service=consent-ui-svclb"
+      # HTTP/HTTPS ingress
+      - "traefik.http.routers.consent-ui.entrypoints=web-insecure,web-secure"
+      - "traefik.http.routers.consent-ui.tls=true"
+      # Middlewares
+      - "traefik.http.routers.consent-ui.middlewares=https-redirect,prefix-strip"
+      # Production ACME cert
+      - "traefik.http.routers.consent-ui.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
   mailslurper:
     # Ory's MailSlurper implementation is broken, build from source
     build: https://github.com/mailslurper/mailslurper.git
@@ -41,12 +77,9 @@ services:
     networks:
       - ory_network
     volumes:
-      - ./extras/mailslurper/data:/app/data
-      - ./extras/mailslurper/config-template.json:/app/config-template.json
-      - ./extras/mailslurper/loader.sh:/app/loader.sh
+      - ./extras/mailslurper:/app
     entrypoint: ["sh"]
-    command:
-      - /app/loader.sh
+    command: ["/app/entrypoint.sh"]
     labels:
       - "traefik.enable=true"
       # WEBMAIL UI
@@ -56,8 +89,7 @@ services:
       - "traefik.http.services.mail.loadbalancer.server.port=4436"
       - "traefik.http.routers.mail.service=mail"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.mail.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.mail.entrypoints[1]=web-secure"
+      - "traefik.http.routers.mail.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.mail.tls=true"
       - "traefik.http.routers.mail.middlewares=https-redirect"
       # WEBMAIL API
@@ -67,12 +99,22 @@ services:
       - "traefik.http.services.slurp.loadbalancer.server.port=4437"
       - "traefik.http.routers.slurp.service=slurp"
       # HTTP/HTTPS ingress
-      - "traefik.http.routers.slurp.entrypoints[0]=web-insecure"
-      - "traefik.http.routers.slurp.entrypoints[1]=web-secure"
+      - "traefik.http.routers.slurp.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.slurp.tls=true"
       - "traefik.http.routers.slurp.middlewares=https-redirect"
       # Production ACME cert
       - "traefik.http.routers.slurp.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
+      # SMTP Service
+      # Name-routed from "smtp" subdomain
+      - "traefik.tcp.routers.smtp.rule=HostSNI(`${SMTP_SUBDOMAIN}.${SERVICE_DOMAIN}`)"
+      # Service LB for port forwarding
+      - "traefik.tcp.services.smtp.loadbalancer.server.port=1025"
+      - "traefik.tcp.routers.smtp.service=smtp"
+      # HTTP/HTTPS ingress
+      - "traefik.tcp.routers.smtp.entrypoints=tcp-smtp"
+      - "traefik.tcp.routers.smtp.tls=true"
+      # Production ACME cert
+      - "traefik.tcp.routers.smtp.tls.certresolver=stg"
 
 networks:
   ory_network:

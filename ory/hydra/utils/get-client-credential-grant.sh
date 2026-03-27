@@ -1,7 +1,7 @@
 #! /bin/bash
 
-source ../../../.env
-ORY_DOCKERFILE="../../../docker-compose-ory.yaml"
+source .env
+ORY_DOCKERFILE="docker-compose-ory.yaml"
 
 HYDRA_PUBLIC_ENDPOINT="https://${SERVICE_DOMAIN}${HYDRA_PUBLIC_PATH}/"
 echo "Calling endpoint: ${HYDRA_PUBLIC_ENDPOINT}" 
