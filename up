@@ -8,7 +8,9 @@ echo
 
 echo "STARTING STACK..."
 docker compose -f docker-compose-pg.yaml up -d
+echo "SLEEPING WHILE DB INITIALIZES..."
 sleep 60
+echo "CONTINUING TO BRING UP STACK..."
 docker compose -f docker-compose-ory.yaml up -d
 docker compose -f docker-compose-extras.yaml up -d
 docker compose -f docker-compose-net.yaml up -d

@@ -9,8 +9,11 @@ services:
       - "--log.level=INFO"
       - "--api.dashboard=true"
       - "--providers.docker=true"
+      # Public
       - "--entrypoints.web-insecure.address=:80"
       - "--entrypoints.web-secure.address=:443"
+      # Admin
+      - "--entrypoints.admin-secure.address=:${ADMIN_PORT}"
       - "--entrypoints.tcp-smtp.address=:1025"
       # ACME STG configuration
       - "--certificatesresolvers.stg.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
@@ -28,18 +31,18 @@ services:
       - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
       # Prefix-stripping Middleware
-      - "traefik.http.middlewares.prefix-strip.stripprefix.prefixes=${KRATOS_PUBLIC_PATH},${KRATOS_ADMIN_PATH},${HYDRA_PUBLIC_PATH},${HYDRA_ADMIN_PATH},/consent,${WHOAMI_PUBLIC_PATH}"
+      - "traefik.http.middlewares.prefix-strip.stripprefix.prefixes=${KRATOS_PUBLIC_PATH},${KRATOS_ADMIN_PATH},${HYDRA_PUBLIC_PATH},${HYDRA_ADMIN_PATH},${CONSENT_UI_PATH},${WHOAMI_PUBLIC_PATH}"
       # DASHBOARD
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_SUBDOMAIN}.${SERVICE_DOMAIN}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.entrypoints=web-insecure,web-secure"
+      - "traefik.http.routers.dashboard.entrypoints=admin-secure"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
-      - "traefik.http.routers.dashboard.middlewares=https-redirect"
     ports:
       - "80:80"
       - "443:443"
+      - "${ADMIN_PORT}:${ADMIN_PORT}"
       - "1025:1025"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

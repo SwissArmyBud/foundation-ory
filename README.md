@@ -4,7 +4,7 @@ Foundation-Ory (_foundationally_) is meant to provide a functionally complete IA
 
 ## Ory Services
 
-- **Kratos**: State-free session management
+- **Kratos**: State-lite session management
 - **Hydra**: State-lite OAuth2.0 server
 
 ## Project Modules
@@ -14,5 +14,11 @@ Foundation-Ory (_foundationally_) is meant to provide a functionally complete IA
 - **Data**: `docker-compose-pg.yaml` creates a Postgres database (persisted to `/pg`) service for internal services, and then automatically attaches Ory auto-migrators to ensure the cluster is always service-ready for the attached Ory stack members.
 - **Extras**: `docker-compose-extras.yaml` contains a series of addons to simplify deployment or development of the Ory stack. It ships with:
   - [kratos-selfservice-ui-node](https://github.com/ory/kratos-selfservice-ui-node) for Kratos session flow validation
+  - [ory-admin-ui](https://github.com/dhia-gharsallaoui/kratos-admin-ui) for backend administration of the Kratos/Hydra system
+  - [hydra-consent-node](https://www.ory.com/docs/hydra/cli/hydra-perform-authorization-code) for validating Hydra is working with Kratos correctly - mocks an oAuth2 client/server
   - [mailslurper](https://github.com/mailslurper/mailslurper) as an SMTP mock for validating flows requiring emails
+- **Debug**: `docker-compose-debug.yaml` contains a series of small additional services to assist with service bringup and validation. By default it only has one service:
   - [whoami](https://github.com/traefik/whoami) to help validate the initial Traefik deployment - provides path and domain based routing examples, and custom service port integration with `portami`
+
+## Architecture Diagram
+![architecture diagram](docs/Architecture.png)

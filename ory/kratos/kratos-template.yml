@@ -18,10 +18,10 @@ serve:
     cors:
       enabled: true
   admin:
-    base_url: https://${SERVICE_DOMAIN}${KRATOS_ADMIN_PATH}
+    base_url: https://${SERVICE_DOMAIN}:${ADMIN_PORT}${KRATOS_ADMIN_PATH}
 
 oauth2_provider:
-  url: https://${SERVICE_DOMAIN}${HYDRA_ADMIN_PATH}
+  url: https://${SERVICE_DOMAIN}:${ADMIN_PORT}${HYDRA_ADMIN_PATH}
 
 selfservice:
   default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome

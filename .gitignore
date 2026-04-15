@@ -5,3 +5,5 @@ pg/data
 # Don't commit executed config templates
 kratos.yml
 hydra.yml
+# Don't commit the mailslurper db
+mailslurper.db

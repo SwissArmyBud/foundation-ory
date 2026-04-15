@@ -16,6 +16,7 @@ services:
       - ./ory/kratos:/opt/envsubst/kratos
       # HYDRA
       - ./ory/hydra:/opt/envsubst/hydra
+      
   kratos:
     image: oryd/kratos:v${ORY_VERSION}
     container_name: ory-kratos
@@ -38,32 +39,29 @@ services:
       - "traefik.enable=true"
       # PUBLIC
       # Name-routed from subdomain
-      - "traefik.http.routers.kratos-public.rule=Host(`${SERVICE_DOMAIN}`)"
-      - "traefik.http.routers.kratos-public.rule=PathPrefix(`${KRATOS_PUBLIC_PATH}`)"
+      - "traefik.http.routers.kratos-public.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KRATOS_PUBLIC_PATH}`)"
       # Service LB for port forwarding
       - "traefik.http.services.kratos-public-svclb.loadbalancer.server.port=4433"
       - "traefik.http.routers.kratos-public.service=kratos-public-svclb"
-      # HTTP/HTTPS ingress
+      # Public HTTP/HTTPS ingress
       - "traefik.http.routers.kratos-public.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.kratos-public.tls=true"
       # Middlewares
       - "traefik.http.routers.kratos-public.middlewares=https-redirect,prefix-strip"
-      # Production ACME cert
+      # ACME certs
       - "traefik.http.routers.kratos-public.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       # ADMIN
       # Name-routed from "auth" subdomain
-      - "traefik.http.routers.kratos-admin.rule=Host(`${SERVICE_DOMAIN}`)"
-      - "traefik.http.routers.kratos-admin.rule=PathPrefix(`${KRATOS_ADMIN_PATH}`)"
+      - "traefik.http.routers.kratos-admin.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KRATOS_ADMIN_PATH}`)"
       # Service LB for port forwarding
       - "traefik.http.services.kratos-admin-svclb.loadbalancer.server.port=4434"
       - "traefik.http.routers.kratos-admin.service=kratos-admin-svclb"
-      # HTTP/HTTPS ingress
-      - "traefik.http.routers.kratos-admin.entrypoints=web-insecure,web-secure"
+      # Admin HTTPS ingress
+      - "traefik.http.routers.kratos-admin.entrypoints=admin-secure"
       - "traefik.http.routers.kratos-admin.tls=true"
-      - "traefik.http.routers.kratos-admin.middlewares[1]=https-redirect"
       # Middlewares
-      - "traefik.http.routers.kratos-admin.middlewares=https-redirect,prefix-strip"
-      # Production ACME cert
+      - "traefik.http.routers.kratos-admin.middlewares=prefix-strip"
+      # ACME certs
       - "traefik.http.routers.kratos-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
   hydra:
@@ -88,12 +86,11 @@ services:
       - "traefik.enable=true"
       # PUBLIC
       # Name-routed from subdomain
-      - "traefik.http.routers.hydra-public.rule=Host(`${SERVICE_DOMAIN}`)"
-      - "traefik.http.routers.hydra-public.rule=PathPrefix(`${HYDRA_PUBLIC_PATH}`)"
+      - "traefik.http.routers.hydra-public.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${HYDRA_PUBLIC_PATH}`)"
       # Service LB for port forwarding
       - "traefik.http.services.hydra-public-svclb.loadbalancer.server.port=4444"
       - "traefik.http.routers.hydra-public.service=hydra-public-svclb"
-      # HTTP/HTTPS ingress
+      # Public HTTP/HTTPS ingress
       - "traefik.http.routers.hydra-public.entrypoints=web-insecure,web-secure"
       - "traefik.http.routers.hydra-public.tls=true"
       # Middlewares
@@ -102,17 +99,15 @@ services:
       - "traefik.http.routers.hydra-public.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
       # ADMIN
       # Name-routed from "auth" subdomain
-      - "traefik.http.routers.hydra-admin.rule=Host(`${SERVICE_DOMAIN}`)"
-      - "traefik.http.routers.hydra-admin.rule=PathPrefix(`${HYDRA_ADMIN_PATH}`)"
+      - "traefik.http.routers.hydra-admin.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${HYDRA_ADMIN_PATH}`)"
       # Service LB for port forwarding
       - "traefik.http.services.hydra-admin-svclb.loadbalancer.server.port=4445"
       - "traefik.http.routers.hydra-admin.service=hydra-admin-svclb"
-      # HTTP/HTTPS ingress
-      - "traefik.http.routers.hydra-admin.entrypoints=web-insecure,web-secure"
+      # Admin HTTPS ingress
+      - "traefik.http.routers.hydra-admin.entrypoints=admin-secure"
       - "traefik.http.routers.hydra-admin.tls=true"
-      - "traefik.http.routers.hydra-admin.middlewares[1]=https-redirect"
       # Middlewares
-      - "traefik.http.routers.hydra-admin.middlewares=https-redirect,prefix-strip"
+      - "traefik.http.routers.hydra-admin.middlewares=prefix-strip"
       # Production ACME cert
       - "traefik.http.routers.hydra-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
