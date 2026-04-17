@@ -1,0 +1,7 @@
+[
+  {
+    "op": "replace",
+    "path": "/post_logout_redirect_uris",
+    "value": ["http://localhost:5173", "https://google.com"]
+  }
+]

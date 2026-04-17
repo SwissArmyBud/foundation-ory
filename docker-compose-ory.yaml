@@ -17,7 +17,7 @@ services:
       # HYDRA
       - ./ory/hydra:/opt/envsubst/hydra
       
-  kratos:
+  ory-kratos:
     image: oryd/kratos:v${ORY_VERSION}
     container_name: ory-kratos
     depends_on:
@@ -64,7 +64,7 @@ services:
       # ACME certs
       - "traefik.http.routers.kratos-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
-  hydra:
+  ory-hydra:
     image: oryd/hydra:v${ORY_VERSION}
     container_name: ory-hydra
     depends_on:
