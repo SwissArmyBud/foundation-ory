@@ -8,6 +8,7 @@ urls:
   consent: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/consent
   login: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
   logout: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/logout
+  error: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/error
   device:
     verification: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/device/verify
     success: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/device/success
@@ -19,7 +20,4 @@ secrets:
 oidc:
   subject_identifiers:
     supported_types:
-      - pairwise
       - public
-    pairwise:
-      salt: youReallyNeedToChangeThis
