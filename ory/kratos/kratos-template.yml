@@ -5,12 +5,12 @@ dsn: ${DSN}
 session:
   cookie:
     path: /
-    domain: .${SERVICE_DOMAIN}
-    same_site: Lax
+    domain: ${SERVICE_DOMAIN}
+    same_site: Strict
 cookies:
   path: /
-  domain: .${SERVICE_DOMAIN}
-  same_site: Lax
+  domain: ${SERVICE_DOMAIN}
+  same_site: Strict
 
 serve:
   public:
