@@ -21,3 +21,6 @@ oidc:
   subject_identifiers:
     supported_types:
       - public
+
+strategies:
+  access_token: jwt
