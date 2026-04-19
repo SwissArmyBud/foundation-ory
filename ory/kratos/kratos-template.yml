@@ -24,7 +24,7 @@ oauth2_provider:
   url: https://${SERVICE_DOMAIN}:${ADMIN_PORT}${HYDRA_ADMIN_PATH}
 
 selfservice:
-  default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome
+  default_browser_return_url: https://${SERVICE_DOMAIN}/welcome
   allowed_return_urls:
     - https://${SERVICE_DOMAIN}
 
@@ -41,39 +41,39 @@ selfservice:
       enabled: true
     code:
       enabled: true
-
+      
   flows:
     error:
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/error
+      ui_url: https://${SERVICE_DOMAIN}/error
 
     settings:
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/settings
+      ui_url: https://${SERVICE_DOMAIN}/settings
       privileged_session_max_age: 15m
       required_aal: highest_available
 
     recovery:
       enabled: true
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/recovery
+      ui_url: https://${SERVICE_DOMAIN}/recovery
       use: code
 
     verification:
       enabled: true
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/verification
+      ui_url: https://${SERVICE_DOMAIN}/verification
       use: code
       after:
-        default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/welcome
+        default_browser_return_url: https://${SERVICE_DOMAIN}/welcome
 
     logout:
       after:
-        default_browser_return_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
+        default_browser_return_url: https://${SERVICE_DOMAIN}/login
 
     login:
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
+      ui_url: https://${SERVICE_DOMAIN}/login
       lifespan: 10m
 
     registration:
       lifespan: 10m
-      ui_url: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/registration
+      ui_url: https://${SERVICE_DOMAIN}/registration
       after:
         password:
           hooks:

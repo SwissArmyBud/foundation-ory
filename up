@@ -1,17 +1,21 @@
 #! /bin/bash
 
-echo "CREATING NETWORK..."
-docker network create ory_network
-echo "DONE."
+if [ -n "$1" ]; then
+    docker compose -f docker-compose-$1.yaml up $2
+else
+    echo "CREATING NETWORK..."
+    docker network create ory_network
+    echo "DONE."
 
-echo
+    echo
 
-echo "STARTING STACK..."
-docker compose -f docker-compose-pg.yaml up -d
-echo "SLEEPING WHILE DB INITIALIZES..."
-sleep 60
-echo "CONTINUING TO BRING UP STACK..."
-docker compose -f docker-compose-ory.yaml up -d
-docker compose -f docker-compose-extras.yaml up -d
-docker compose -f docker-compose-net.yaml up -d
-echo "DONE."
+    echo "STARTING STACK..."
+    docker compose -f docker-compose-pg.yaml up -d
+    echo "SLEEPING WHILE DB INITIALIZES..."
+    sleep 60
+    echo "CONTINUING TO BRING UP STACK..."
+    docker compose -f docker-compose-ory.yaml up -d
+    docker compose -f docker-compose-extras.yaml up -d
+    docker compose -f docker-compose-net.yaml up -d
+    echo "DONE."
+fi

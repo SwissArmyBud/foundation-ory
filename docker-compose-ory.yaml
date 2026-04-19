@@ -1,5 +1,6 @@
 version: '3.7'
 services:
+
   ory-config-bridge:
     build: ./ory/envsubst
     container_name: ory-config-bridge
@@ -16,6 +17,8 @@ services:
       - ./ory/kratos:/opt/envsubst/kratos
       # HYDRA
       - ./ory/hydra:/opt/envsubst/hydra
+      # KETO
+      - ./ory/keto:/opt/envsubst/keto
       
   ory-kratos:
     image: oryd/kratos:v${ORY_VERSION}
@@ -39,7 +42,7 @@ services:
       - "traefik.enable=true"
       # PUBLIC
       # Name-routed from subdomain
-      - "traefik.http.routers.kratos-public.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KRATOS_PUBLIC_PATH}`)"
+      - "traefik.http.routers.kratos-public.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KRATOS_PUBLIC_PATH}`) && !PathPrefix(`${KRATOS_PUBLIC_PATH}s`)" # Naming conflict - need to be very sensitive
       # Service LB for port forwarding
       - "traefik.http.services.kratos-public-svclb.loadbalancer.server.port=4433"
       - "traefik.http.routers.kratos-public.service=kratos-public-svclb"
@@ -111,6 +114,50 @@ services:
       # Production ACME cert
       - "traefik.http.routers.hydra-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
 
+  ory-keto:
+    image: oryd/keto:v${ORY_VERSION}
+    container_name: ory-keto
+    restart: unless-stopped
+    env_file: 
+      - path: .env
+        required: true
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@ory-pg:5432/${POSTGRES_KETO_DB}?sslmode=disable&max_conns=20&max_idle_conns=4
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/keto/keto.yml
+    volumes:
+      - ./ory/keto:/etc/config/keto
+    networks:
+      - ory_network
+    labels:
+      - "traefik.enable=true"
+      # PUBLIC
+      # Path-routed from subdomain
+      - "traefik.http.routers.keto-public.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KETO_PUBLIC_PATH}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.keto-public-svclb.loadbalancer.server.port=4466"
+      - "traefik.http.routers.keto-public.service=keto-public-svclb"
+      # Public HTTP/HTTPS ingress
+      - "traefik.http.routers.keto-public.entrypoints=web-insecure,web-secure"
+      - "traefik.http.routers.keto-public.tls=true"
+      # Middlewares
+      - "traefik.http.routers.keto-public.middlewares=https-redirect,prefix-strip"
+      # ACME certs
+      - "traefik.http.routers.keto-public.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
+      # ADMIN
+      # Path-routed from "auth" subdomain
+      - "traefik.http.routers.keto-admin.rule=Host(`${SERVICE_DOMAIN}`) && PathPrefix(`${KETO_ADMIN_PATH}`)"
+      # Service LB for port forwarding
+      - "traefik.http.services.keto-admin-svclb.loadbalancer.server.port=4467"
+      - "traefik.http.routers.keto-admin.service=keto-admin-svclb"
+      # Admin HTTPS ingress
+      - "traefik.http.routers.keto-admin.entrypoints=admin-secure"
+      - "traefik.http.routers.keto-admin.tls=true"
+      # Middlewares
+      - "traefik.http.routers.keto-admin.middlewares=prefix-strip"
+      # ACME certs
+      - "traefik.http.routers.keto-admin.tls.certresolver=${ACME_DEFAULT_RESOLVER}"
+      
 networks:
   ory_network:
     external: true

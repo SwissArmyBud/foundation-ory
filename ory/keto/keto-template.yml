@@ -1,0 +1,17 @@
+namespaces:
+  - name: User
+    id: 1
+    
+serve:
+  read:
+    port: 4466
+    cors:
+      enabled: true
+      allowed_origins:
+        - '*'
+  write:
+    port: 4467
+    cors:
+      enabled: true
+      allowed_origins:
+        - '*'

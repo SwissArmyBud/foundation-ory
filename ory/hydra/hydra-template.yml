@@ -5,13 +5,13 @@ serve:
 urls:
   self:
     issuer: https://${SERVICE_DOMAIN}${HYDRA_PUBLIC_PATH}
-  consent: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/consent
-  login: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/login
-  logout: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/logout
-  error: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/error
+  consent: https://${SERVICE_DOMAIN}/consent
+  login: https://${SERVICE_DOMAIN}/login
+  logout: https://${SERVICE_DOMAIN}/logout
+  error: https://${SERVICE_DOMAIN}/error
   device:
-    verification: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/device/verify
-    success: https://${SERVICE_DOMAIN}${SELFSERVE_UI_PATH}/device/success
+    verification: https://${SERVICE_DOMAIN}/device/verify
+    success: https://${SERVICE_DOMAIN}/device/success
 
 secrets:
   system:

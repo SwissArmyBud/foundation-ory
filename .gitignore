@@ -5,5 +5,8 @@ pg/data
 # Don't commit executed config templates
 kratos.yml
 hydra.yml
+keto.yml
 # Don't commit the mailslurper db
 mailslurper.db
+# Any file-based customizations for local work are ignored
+overrides/**
